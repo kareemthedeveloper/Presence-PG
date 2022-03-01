@@ -1,0 +1,12 @@
+.modalBodyy {
+    position: relative;
+}
+.divider {
+    margin-right: 30px;
+}
+.text-bold {
+    font-weight: bold;
+}
+.text-size-large {
+    font-size: 150%;
+}

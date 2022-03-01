@@ -1,0 +1,196 @@
+<template>
+     <lightning-card>
+    <template if:false={isModalOpen}>
+    <lightning-quick-action-panel class="text-bold text-size-large" header="Manage People">
+        <div class="slds-p-around_none slds-m-top_x-small slds-m-bottom_medium slds-m-horizontal_none modalBodyy">
+             
+             <lightning-card>
+                 <template if:false={isShowSpinner}>
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="First Name">First Name</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Last Name">Last Name</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Total Amount of Payments">Total Amount of Payments</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Most Recent Payment Date">Most Recent Payment Date</div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate" title="Action">Action</div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={records} for:item="obj">
+                                <tr class="inputRows" key={obj.Id}>
+                                    <th data-label="First Name" scope="row">
+                                        <lightning-input type="text" data-key={obj.Id} class="fields" variant="label-hidden" label="First Name" 
+                                        name="FirstName" value={obj.FirstName} data-id={obj.Id} disabled="true"></lightning-input>
+                                    </th>
+                                    <td data-label="Last Name">
+                                        <lightning-input type="text" data-key={obj.Id} class="fields" variant="label-hidden" label="Last Name" 
+                                        name="LastName" value={obj.LastName} data-id={obj.Id} disabled="true"></lightning-input>
+                                    </td>
+                                    <td data-label="Total Amount of Payments">
+                                       <lightning-input type="number" class="fields" data-key={obj.Id} variant="label-hidden" 
+                                       label="Total Amount of Payments" name="Total Amount of Payments" value={obj.Total_Amount_of_Payments__c} 
+                                       data-id={obj.Id} onchange={updateContactValues}></lightning-input>
+                                    </td>
+                                    <td data-label="Most Recent Payment Date">
+                                       <lightning-input type="Date" class="fields" data-key={obj.Id} variant="label-hidden" max={noFutureDate}
+                                          label="Most Recent Payment Date" name="Most Recent Payment Date" value={obj.Most_Recent_Payment_Date__c} 
+                                          data-id={obj.Id} onchange={updateContactValues}></lightning-input>
+                                    </td>
+                                    <td data-label="Action">
+                                        <lightning-button-icon icon-name="action:preview"  alternative-text="preview" title="preview" data-id={obj.Id} 
+                                        onclick={viewPaymentData}></lightning-button-icon>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                     </template>
+            </lightning-card>
+           
+        </div>
+        <div slot="footer">
+            <lightning-button variant="brand" label="Save" onclick={handleContactSave} ></lightning-button>
+        </div>
+    </lightning-quick-action-panel>
+    </template>
+
+    <template if:true={isModalOpen}>
+        <lightning-quick-action-panel header="Manage Payments">
+            <div class="slds-p-around_none slds-m-top_x-small slds-m-bottom_medium slds-m-horizontal_none modalBodyy">
+                <template if:false={isShowSpinner}>
+                   
+                <lightning-card>
+                <lightning-button label="Add Payment" slot="actions" icon-name="utility:add" onclick={createPayment}></lightning-button>
+            <div class="slds-m-around_medium">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered" aria-labelledby="element-with-table-label other-element-with-table-label">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Payment Id">Payment Id</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Project">Project</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Payment Amount">Payment Amount</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Payment Date">Payment Date</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Method of Payment">Method of Payment</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate" title="Action">Action</div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={paymentData} for:item="obj">
+                            <tr class="inputRows" key={obj.Id}>
+                                <th data-label="Payment Id" scope="row">
+                                    <lightning-input type="text" class="fields" variant="label-hidden" label="Payment Id" 
+                                    name="PaymentId" value={obj.Name} data-id={obj.Id} disabled="true"></lightning-input>
+                                </th>
+                                <td data-label="Project">
+                                    <lightning-input type="text" class="fields" variant="label-hidden" label="Project" 
+                                    name="Project" value={obj.Project__c} data-id={obj.Id} disabled="true"></lightning-input>
+                                </td>
+                                <td data-label="Payment Amount">
+                                    <lightning-input type="number" class="fields" variant="label-hidden" label="Payment Amount" 
+                                    name="Payment Amount" value={obj.Payment_Amount__c} data-id={obj.Id} onchange={updatePaymentValues}></lightning-input>
+                                </td>
+                                <td data-label="Payment Date">
+                                    <lightning-input type="Date" class="fields" variant="label-hidden" max={noFutureDate} label="Payment Date" 
+                                    name="Payment Date" value={obj.Payment_Date__c} data-id={obj.Id} onchange={updatePaymentValues}></lightning-input>
+                                </td>
+                                <td data-label="Method of Payment">
+                                    <lightning-input type="text" class="fields" variant="label-hidden" label="Method of Payment" 
+                                    name="Method of Payment" value={obj.Method_of_Payment__c} data-id={obj.Id} disabled = "true"></lightning-input>
+                                </td>
+                                <td data-label="Action">
+                                    <lightning-button-icon icon-name="action:delete"  alternative-text="delete" title="delete" 
+                                    data-id={obj.Id} onclick={handleDeleteAction}></lightning-button-icon>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </lightning-card>
+        </template>
+        </div>
+        <div slot="footer">
+            <lightning-button class="divider" variant="brand" label="Back" onclick={navigateToContactList} ></lightning-button>
+            <lightning-button class="divider" variant="brand" label="Cancel" onclick={handleCancel} ></lightning-button>
+            <lightning-button class="divider" variant="brand" label="Save" onclick={handlePaymentSave} ></lightning-button>
+        </div>
+        </lightning-quick-action-panel>
+    </template>
+
+
+    <template if:true={isNewPaymentModal}>
+        
+         <template if:false={isShowSpinner}>
+            
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={navigateToPaymentList}>
+                                <lightning-icon icon-name="utility:close"
+                                    alternative-text="close"
+                                    variant="inverse"
+                                    size="small" ></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate"><b>Create Payment</b></h2>
+                        </header>
+                         <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <lightning-record-edit-form
+                        object-api-name="Payment__c"
+                        onsuccess={handleSuccess}>
+                        <lightning-messages> </lightning-messages>
+                            <lightning-input-field field-name="Person__c"> </lightning-input-field>
+                            <lightning-input-field field-name="Project__c"> </lightning-input-field>
+                            <lightning-input-field field-name="Payment_Amount__c"> </lightning-input-field>
+                            <lightning-input-field field-name="Payment_Date__c"> </lightning-input-field>
+                            <lightning-input-field field-name="Method_of_Payment__c"> </lightning-input-field>
+                            <lightning-input-field field-name="Payment_Status__c"> </lightning-input-field>
+
+                        <lightning-button class="slds-m-top_small divider" variant="brand" onclick={navigateToPaymentList} name="Back" label="Back"></lightning-button>
+                        <lightning-button class="slds-m-top_small divider" variant="brand" type="reset" onclick={handleReset} name="Cancel" label="Cancel"></lightning-button>
+                        <lightning-button class="slds-m-top_small divider" variant="brand" type="submit" name="Submit" label="Submit"></lightning-button>
+                        </lightning-record-edit-form>
+                    </div>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+               
+                </template>
+            
+    </template>
+
+    <template if:true={isShowSpinner}>
+        <div class="demo-only demo-only_viewport demo--inverse" style="height:6rem;background-color:#16325c;position:relative">
+            <div class="slds-spinner_container slds-is-fixed">
+                <div role="status" class="slds-spinner slds-spinner_medium">
+                    <span class="slds-assistive-text">Loading</span>
+                    <div class="slds-spinner__dot-a"></div>
+                    <div class="slds-spinner__dot-b"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+     </lightning-card>
+</template>
