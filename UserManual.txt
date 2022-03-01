@@ -1,0 +1,3 @@
+Step 1: Set up user with the email sent to codeexercise@presencepg.com.
+Step 2: Open the app launcher and type "Payment Details".
+Step 3: View, edit, add and delete Payments.
